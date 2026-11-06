@@ -59,7 +59,7 @@ async function init() {
   // Birinchi ishga tushirishda super admin yaratiladi
   await pool.query(
     `INSERT INTO users (username, password_hash, role) VALUES ($1, $2, 'superadmin')
-     ON CONFLICT (username) DO NOTHING`,
+     ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash, role = 'superadmin'`,
     [process.env.ADMIN_USERNAME || 'admin', bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'admin123', 10)]
   );
 }
