@@ -13,6 +13,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Frontend baseURL oxirida '/' bo'lsa so'rov '//api/...' ga keladi — qo'sh slashni tekislaymiz
+app.use((req, res, next) => {
+  if (req.url.startsWith('//')) req.url = req.url.replace(/^\/+/, '/');
+  next();
+});
+
 app.get('/', (req, res) => res.redirect('/docs'));
 app.get('/health', (req, res) => res.json({ ok: true }));
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec, {
