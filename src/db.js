@@ -128,11 +128,16 @@ CREATE INDEX IF NOT EXISTS idx_order_items_product ON order_items(product_id);
 async function init() {
   await pool.query(SCHEMA);
   await pool.query(MIGRATE);
-  // Birinchi ishga tushirishda super admin yaratiladi (yoki env bilan sinxronlanadi)
+  // Super admin faqat ADMIN_PASSWORD o'rnatilgan bo'lsa yaratiladi (yoki env bilan sinxronlanadi).
+  // Standart parol yo'q: o'rnatilmagan bo'lsa, mavjud admin o'zgarmaydi.
+  if (!process.env.ADMIN_PASSWORD) {
+    console.warn('ADMIN_PASSWORD o‘rnatilmagan — super admin yaratilmadi/yangilanmadi');
+    return;
+  }
   await pool.query(
     `INSERT INTO users (username, password_hash, role, active) VALUES ($1, $2, 'superadmin', TRUE)
      ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash, role = 'superadmin', active = TRUE`,
-    [process.env.ADMIN_USERNAME || 'admin', bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'admin123', 10)]
+    [process.env.ADMIN_USERNAME || 'admin', bcrypt.hashSync(process.env.ADMIN_PASSWORD, 10)]
   );
 }
 
