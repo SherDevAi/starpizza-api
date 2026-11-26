@@ -169,7 +169,7 @@ module.exports = {
         responses: { 201: ok('Yaratildi', AuthResult), ...e400, ...e409('Username band') } },
     },
     '/api/auth/login': {
-      post: { tags: ['Auth'], summary: 'Login — barcha rollar uchun (JWT token olish)', requestBody: body(AuthBody, { username: 'admin', password: 'parol' }),
+      post: { tags: ['Auth'], summary: 'Login — barcha rollar uchun (JWT token olish)', requestBody: body(AuthBody, { username: 'admin', password: 'admin123' }),
         responses: { 200: ok('Muvaffaqiyatli', AuthResult), 401: { description: 'Noto\'g\'ri login yoki parol' }, 403: { description: 'Hisob yoki filial bloklangan' } } },
     },
     '/api/auth/me': {

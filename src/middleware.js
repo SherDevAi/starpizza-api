@@ -1,20 +1,15 @@
 const jwt = require('jsonwebtoken');
 const { get } = require('./db');
 
-// Standart (ochiq) kalit yo'q: JWT_SECRET o'rnatilmasa, token berilmaydi va qabul qilinmaydi
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
 const JWT_EXPIRES = process.env.JWT_EXPIRES || '7d';
-const noSecret = () => Object.assign(new Error('JWT_SECRET muhit o‘zgaruvchisi o‘rnatilmagan'), { status: 500 });
 
-const signToken = (user) => {
-  if (!JWT_SECRET) throw noSecret();
-  return jwt.sign({ id: user.id, username: user.username, role: user.role, branch_id: user.branch_id ?? null }, JWT_SECRET, {
+const signToken = (user) =>
+  jwt.sign({ id: user.id, username: user.username, role: user.role, branch_id: user.branch_id ?? null }, JWT_SECRET, {
     expiresIn: JWT_EXPIRES,
   });
-};
 
 function auth(req, res, next) {
-  if (!JWT_SECRET) return res.status(500).json({ error: noSecret().message });
   const header = req.headers.authorization || '';
   const [scheme, token] = header.split(' ');
   if (scheme !== 'Bearer' || !token) return res.status(401).json({ error: 'Token talab qilinadi' });
